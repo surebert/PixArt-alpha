@@ -14,6 +14,7 @@ services:
     volumes:
       - ./docker/cache/gradio:/workspace/gradio_cached_examples/30:rw
       - ./docker/cache/huggingface:/root/.cache/huggingface:rw
+      - ./docker/cache/output:/workspace/output:rw
     deploy:
       resources:
         reservations:

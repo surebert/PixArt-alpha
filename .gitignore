@@ -155,3 +155,4 @@ tmp.py
 #cache for docker
 docker/cache/gradio
 docker/cache/huggingface
+docker/cache/output
