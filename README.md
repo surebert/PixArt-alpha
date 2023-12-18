@@ -269,7 +269,7 @@ docker build . -t pixart
 docker run --gpus all -it -p 12345:12345 -v <path_to_huggingface_cache>:/root/.cache/huggingface pixart
 ```
 
-Or use docker-compose
+Or use docker-compose.  By editing the docker-compose.yml you can change the mount points for cache and output.  The default is inside the docker/cache directory
 ```bash
 docker compose build
 docker compose up
