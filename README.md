@@ -36,12 +36,16 @@ Fast training diffusion models with transformers. You can find more visualizatio
 
 ---
 ## Breaking News 🔥🔥!!
+- (🔥 New) Dec. 17, 2023. 💥 [PixArt-LCM-Lora](train_scripts/train_pixart_lcm_lora.py) & [PixArt-Lora](train_scripts/train_pixart_lora_hf.py) training scripts in Hugging Face style is released.
+- (🔥 New) Dec. 17, 2023. 💥 PixArt supports [ComfyUI](https://github.com/comfyanonymous/ComfyUI#manual-install-windows-linux). Thanks to [@city96](https://github.com/city96/ComfyUI_ExtraModels) with his great work.
+- (🔥 New) Dec. 17, 2023. PixArt-ControlNet training scripts will be released very soon. Stay tuned!!
 - (🔥 New) Nov. 30, 2023. 💥 PixArt collaborates with [LCMs](https://github.com/luosiallen/latent-consistency-model) team to make the **fastest** [Training & Inference Text-to-Image Generation System](https://github.com/PixArt-alpha/PixArt-alpha).
 Here, [Training code](train_scripts/train_pixart_lcm.py) & [Inference code](scripts/inference_lcm.py) & [Weights](https://huggingface.co/PixArt-alpha/PixArt-LCM-XL-2-1024-MS) & [Demo](https://huggingface.co/spaces/PixArt-alpha/PixArt-LCM) are all released, we hope users will enjoy them. 
 Detailed **inference speed** and **code guidance** can be found in [docs](asset/docs/pixart_lcm.md). At the same time, we update the codebase for better user experience and fix some bugs in the newest version.
 
 ---
 ## 🚩 **New Features/Updates**
+- ✅ Dec. 13, 2023. Add multi-scale vae feature extraction in [tools/extract_features.py](https://github.com/PixArt-alpha/PixArt-alpha/blob/3b4f0afdbe39def80b41ab05c664c963edeebbcd/tools/extract_features.py#L276).
 - ✅ Dec. 01, 2023. Add a [Notebook folder](./notebooks) to help users get started with PixArt quickly! Thanks to [@kopyl](https://github.com/kopyl) for his contribution!
 - ✅ Nov. 27, 2023. 💥 **PixArt-α Community**: Join our PixArt-α discord channels <a href="https://discord.gg/rde6eaE5Ta" style="text-decoration:none;">
 <img src="https://user-images.githubusercontent.com/25839884/218347213-c080267f-cbb6-443e-8532-8e1ed9a58ea9.png" width="3%" alt="" /></a> for discussions. Coders are welcome to contribute.
@@ -128,7 +132,7 @@ PixArt-α only takes 12% of Stable Diffusion v1.5's training time (753 vs. 6,250
 ```bash
 conda create -n pixart python==3.9.0
 conda activate pixart
-pip install torch==2.0.0+cu117 torchvision==0.15.1+cu117 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu117
+pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 --index-url https://download.pytorch.org/whl/cu117
 
 git clone https://github.com/PixArt-alpha/PixArt-alpha.git
 cd PixArt-alpha
@@ -217,10 +221,29 @@ Besides, for json file guided [training](https://github.com/PixArt-alpha/PixArt-
 
 Following the `Pixart + DreamBooth` [training guidance](asset/docs/pixart-dreambooth.md)
 
-## 3. PixArt +LCM Training
+## 3. PixArt + LCM / LCM-LoRA Training
 
 Following the `PixArt + LCM` [training guidance](asset/docs/pixart_lcm.md)
 
+
+## 4. PixArt + LoRA Training
+
+```bash
+pip install peft==0.6.2
+
+accelerate launch --num_processes=1 --main_process_port=36667  train_scripts/train_pixart_lora_hf.py --mixed_precision="fp16" \
+  --pretrained_model_name_or_path=PixArt-alpha/PixArt-XL-2-1024-MS \
+  --dataset_name=lambdalabs/pokemon-blip-captions --caption_column="text" \
+  --resolution=1024 --random_flip \
+  --train_batch_size=16 \
+  --num_train_epochs=200 --checkpointing_steps=100 \
+  --learning_rate=1e-06 --lr_scheduler="constant" --lr_warmup_steps=0 \
+  --seed=42 \
+  --output_dir="pixart-pokemon-model" \
+  --validation_prompt="cute dragon creature" --report_to="tensorboard" \
+  --gradient_checkpointing --checkpoints_total_limit=10 --validation_epochs=5 \
+  --rank=16
+```
 
 # 💻 How to Test
 Inference requires at least `23GB` of GPU memory using this repo, while `11GB and 8GB` using in 🧨 [diffusers](#using-in--diffusers).
@@ -246,7 +269,8 @@ docker build . -t pixart
 docker run --gpus all -it -p 12345:12345 -v <path_to_huggingface_cache>:/root/.cache/huggingface pixart
 ```
 
-Or use docker-compse
+Or use docker-compose.  Note, if you want to change context from the 1024 to 512 or LCM version of the app just change the APP_CONTEXT env variable in the docker-compose.yml file.  The default is 1024
+
 ```bash
 docker compose build
 docker compose up
@@ -354,10 +378,11 @@ python tools/extract_features.py --img_size=1024 \
 - [x] Dreambooth Training code
 - [x] SA-Solver code
 - [x] PixArt-α-LCM will release soon
-- [ ] PixArt-α-LCM-LoRA will release soon
+- [x] Multi-scale vae feature extraction code
+- [x] PixArt-α-LCM-LoRA scripts will release soon
+- [x] PixArt-α-LoRA training scripts will release soon
+- [ ] ControlNet code will be released
 - [ ] SAM-LLaVA caption dataset
-- [ ] ControlNet code
-
 
 [//]: # (.mp4)
 
@@ -377,3 +402,6 @@ python tools/extract_features.py --img_size=1024 \
 - Thanks to [Hugging Face](https://github.com/huggingface) for sponsoring the nicely demo!
 - Thanks to [DiT](https://github.com/facebookresearch/DiT) for their wonderful work and codebase!
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=PixArt-alpha/PixArt-alpha&type=Date)](https://star-history.com/#PixArt-alpha/PixArt-alpha&Date)

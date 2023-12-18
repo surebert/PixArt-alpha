@@ -1,7 +1,7 @@
 # This is a sample Dockefile that builds a runtime container and runs the sample Gradio app.
 # Note, you must pass in the pretrained models when you run the container.
 
-FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
 
 WORKDIR /workspace
 
@@ -23,5 +23,7 @@ RUN pip install -r requirements.txt
 
 ADD . .
 
+RUN chmod a+x docker-entrypoint.sh
+
 ENV DEMO_PORT=12345
-CMD [ "/usr/bin/python", "/workspace/scripts/app.py" ]
+ENTRYPOINT [ "/workspace/docker-entrypoint.sh" ]
